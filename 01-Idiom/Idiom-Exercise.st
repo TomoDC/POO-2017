@@ -13,54 +13,51 @@ TestCase subclass: #IdiomTest
 	poolDictionaries: ''
 	category: 'Idiom-Exercise'!
 
-!IdiomTest methodsFor: 'testing' stamp: 'HAW 4/14/2017 16:56:37'!
+!IdiomTest methodsFor: 'testing' stamp: 'FG 4/20/2017 21:05:15'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 
-	| customerBook millisecondsBeforeRunning millisecondsAfterRunning |
+	| customerBook duration |
 	
 	customerBook := CustomerBook  new.
 	
-	millisecondsBeforeRunning := Time millisecondClockValue.
-	customerBook addCustomerNamed: 'John Lennon'.
-	millisecondsAfterRunning := Time millisecondClockValue.
+	duration := self measureDurationInMilliseconds: [
+		customerBook addCustomerNamed: 'John Lennon'.
+	].
 	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < 50 
+	self assert: duration < 50 
 	
 ! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'HernanWilkinson 4/11/2016 20:29'!
+!IdiomTest methodsFor: 'testing' stamp: 'FG 4/20/2017 21:04:30'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 
-	| customerBook millisecondsBeforeRunning millisecondsAfterRunning paulMcCartney |
+	| customerBook paulMcCartney duration |
 	
 	customerBook := CustomerBook  new.
 	paulMcCartney := 'Paul McCartney'.
 	
 	customerBook addCustomerNamed: paulMcCartney.
-	  
-	millisecondsBeforeRunning := Time millisecondClockValue.
-	customerBook removeCustomerNamed: paulMcCartney.
-	millisecondsAfterRunning := Time millisecondClockValue.
 	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < 100 
+	duration := self measureDurationInMilliseconds: [
+		customerBook removeCustomerNamed: paulMcCartney.
+	].
+	
+	self assert: duration < 100 
 	
 ! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'HernanWilkinson 5/9/2012 18:12'!
+!IdiomTest methodsFor: 'testing' stamp: 'FG 4/20/2017 21:54:10'!
 test03CanNotAddACustomerWithEmptyName 
 
 	| customerBook |
 			
 	customerBook := CustomerBook new.
+	
+	self assertException: [customerBook addCustomerNamed: ''] isOfType: Error and: [ :anError | 
+			(anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage) & (customerBook isEmpty) ]. 
+! !
 
-	[ customerBook addCustomerNamed: ''.
-	self fail ]
-		on: Error 
-		do: [ :anError | 
-			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
-			self assert: customerBook isEmpty ]! !
-
-!IdiomTest methodsFor: 'testing' stamp: 'HernanWilkinson 5/16/2012 16:50'!
+!IdiomTest methodsFor: 'testing' stamp: 'FG 4/20/2017 21:36:29'!
 test04CanNotRemoveAndInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -69,13 +66,24 @@ test04CanNotRemoveAndInvalidCustomer
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	
-	[ customerBook removeCustomerNamed: 'Paul McCartney'.
-	self fail ]
-		on: NotFound 
-		do: [ :anError | 
-			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]
+	self assertException: [customerBook removeCustomerNamed: 'Paul McCartney'.] isOfType: NotFound and: [ :anError | 
+		(customerBook numberOfCustomers = 1) & (customerBook includesCustomerNamed: johnLennon)]. 
 ! !
+
+
+!IdiomTest methodsFor: 'as yet unclassified' stamp: 'FG 4/20/2017 21:49:38'!
+assertException: aBlockClosure isOfType: anErrorClass and: aBlockClosure3 
+	[ aBlockClosure value.
+		self fail ]
+	on: anErrorClass do: [ :anError | self assert: (aBlockClosure3 value: anError) ]! !
+
+!IdiomTest methodsFor: 'as yet unclassified' stamp: 'FG 4/20/2017 21:04:00'!
+measureDurationInMilliseconds: aBlockClosure 
+	| millisecondsAfterRunning millisecondsBeforeRunning |
+	millisecondsBeforeRunning := Time millisecondClockValue.
+	aBlockClosure value.
+	millisecondsAfterRunning := Time millisecondClockValue.
+	^ millisecondsAfterRunning - millisecondsBeforeRunning! !
 
 
 !classDefinition: #CustomerBook category: #'Idiom-Exercise'!
