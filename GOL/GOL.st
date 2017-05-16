@@ -95,12 +95,12 @@ initializeWith: aCollectionOfAliveCells withSize: aSize
 		(aCell x between: 0 and: size x) and: [ aCell y between: 0 and: size y]]) or: [ self error: 'celda fuera de rango' ]! !
 
 
-!GameOfLife methodsFor: 'cellsCaracteristics' stamp: 'HAW 5/11/2017 21:11:17'!
+!GameOfLife methodsFor: 'cell caracteristics' stamp: 'HAW 5/11/2017 21:11:17'!
 hasToResurrect: aCell
 
 	^(self numberOfAliveNeighboursOf: aCell) = 3! !
 
-!GameOfLife methodsFor: 'cellsCaracteristics' stamp: 'HAW 5/11/2017 19:57:05'!
+!GameOfLife methodsFor: 'cell caracteristics' stamp: 'HAW 5/11/2017 19:57:05'!
 hasToSurvive: aCell
 	
 	| numberOfAliveNeighbours|
@@ -109,12 +109,12 @@ hasToSurvive: aCell
 	
 	^numberOfAliveNeighbours = 2 or:  [numberOfAliveNeighbours = 3]! !
 
-!GameOfLife methodsFor: 'cellsCaracteristics' stamp: 'HAW 5/10/2017 10:28:24'!
+!GameOfLife methodsFor: 'cell caracteristics' stamp: 'HAW 5/10/2017 10:28:24'!
 isDeadAt: aCell
 
 	^(aliveCells includes: aCell) not! !
 
-!GameOfLife methodsFor: 'cellsCaracteristics' stamp: 'HAW 5/10/2017 10:29:35'!
+!GameOfLife methodsFor: 'cell caracteristics' stamp: 'HAW 5/10/2017 10:29:35'!
 numberOfAliveNeighboursOf: aCell
 
 	^(aCell eightNeighbors intersection: aliveCells) size! !
