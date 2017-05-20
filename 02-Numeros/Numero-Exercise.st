@@ -373,7 +373,7 @@ hash
 
 
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'T 5/1/2017 20:12:49'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
 * aMultiplier 
 	
 	aMultiplier class = self class ifTrue:[^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)].
