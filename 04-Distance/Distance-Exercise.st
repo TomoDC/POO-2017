@@ -1,66 +1,275 @@
 !classDefinition: #DistanceTest category: #'Distance-Exercise'!
 TestCase subclass: #DistanceTest
+	instanceVariableNames: 'unMetro otroUnMetro dosMetros cienCentimetros thousandMillimeter halfMeter zeroMeter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Distance-Exercise'!
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:08:25'!
+setUp
+
+	unMetro := Meter amount: 1.
+	otroUnMetro := Meter amount: 1.
+	dosMetros := Meter amount: 2.
+	cienCentimetros := Centimeter amount: 100.
+	thousandMillimeter := Millimeter amount: 1000.
+	halfMeter := Meter amount: (1 / 2).
+	zeroMeter := Meter amount: 0.! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:01:34'!
+test01OneMeterShouldBeEqualToOneMeter
+	
+	self assert: unMetro equals: otroUnMetro! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:05:39'!
+test02MetersAddCorrectly
+
+	self assert: (unMetro + unMetro) equals: dosMetros! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:04:02'!
+test03MetersEquivalentToCentimeters
+
+	self assert: unMetro equals: cienCentimetros
+	
+	
+	! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:05:44'!
+test04CentimetersEquivalentToMeters
+	
+	self assert: cienCentimetros equals: unMetro
+	
+	
+	! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:05:30'!
+test05CentimetersEqualToThemselves
+	
+	self assert: cienCentimetros equals: cienCentimetros
+	
+	
+	! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:06:10'!
+test06CentimetersEquivalentToMillimeters
+	
+	self assert: cienCentimetros equals: thousandMillimeter! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:15:02'!
+test07DistancesAreSubtractedCorrectly
+
+	self assert: dosMetros - cienCentimetros equals: thousandMillimeter.
+	self assert: cienCentimetros - unMetro equals: zeroMeter.
+	self assert: thousandMillimeter - cienCentimetros equals: zeroMeter.! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:15:47'!
+test08MetersAreMultipliedByNumbersCorrectly
+
+	self assert: unMetro * 2 equals: dosMetros ! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:17:33'!
+test09NumbersAreMultipliedByDistancesCorrectly
+	self assert: 2 * unMetro equals: dosMetros.
+	self assert: 2 * cienCentimetros equals: dosMetros.
+	self assert: 2 * thousandMillimeter equals: dosMetros.! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:19:26'!
+test10DistancesAreDividedCorrectly
+	self assert: unMetro / 2 equals: halfMeter.
+	self assert: cienCentimetros / 2 equals: halfMeter.
+	self assert: thousandMillimeter / 2 equals: halfMeter.! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:27:11'!
+test11DistancesAreAddedCorrectly
+	self assert: unMetro + cienCentimetros equals: dosMetros.
+	self assert: unMetro + thousandMillimeter equals: dosMetros.
+	self assert: cienCentimetros + unMetro equals: dosMetros.
+	self assert: thousandMillimeter + unMetro equals: dosMetros.! !
+
+
+!classDefinition: #Distance category: #'Distance-Exercise'!
+Object subclass: #Distance
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Distance-Exercise'!
 
-!DistanceTest methodsFor: 'as yet unclassified' stamp: 'T 5/22/2017 22:11:21'!
-test01UnMetroShouldBeEqualToUnMetro
+!Distance methodsFor: 'converting' stamp: 'FG 5/23/2017 20:06:11'!
+asCentimeter
+	self subclassResponsibility ! !
 
-	| unMetro otroUnMetro |
-	unMetro := Metro with: 1.
-	otroUnMetro := Metro with: 1.
-	
-	self assert: unMetro = otroUnMetro! !
+!Distance methodsFor: 'converting' stamp: 'FG 5/23/2017 20:05:52'!
+asMeter
+	self subclassResponsibility ! !
 
-!DistanceTest methodsFor: 'as yet unclassified' stamp: 'T 5/22/2017 21:58:51'!
-test02UnMetroPlusUnMetroShouldBeEqualToDosMetros
+!Distance methodsFor: 'converting' stamp: 'FG 5/23/2017 20:06:16'!
+asMillimeter
+	self subclassResponsibility ! !
 
-	| unMetro dosMetros |
-	unMetro := Metro with: 1.
-	dosMetros := Metro with: 2.
+
+!Distance methodsFor: 'arithmetic' stamp: 'FG 5/23/2017 21:28:34'!
+* aNumber
+	^self class amount: (self amount * aNumber)! !
+
+!Distance methodsFor: 'arithmetic' stamp: 'FG 5/23/2017 21:30:31'!
++ aDistance
+	^self class amount: (self amount + (self class from: aDistance) amount)! !
+
+!Distance methodsFor: 'arithmetic' stamp: 'FG 5/23/2017 21:32:17'!
+- aDistance 
+	^self class amount: (self amount - (self class from: aDistance) amount)! !
+
+!Distance methodsFor: 'arithmetic' stamp: 'FG 5/23/2017 21:29:18'!
+/ aNumber
+	^self class amount: (self amount / aNumber)! !
+
+!Distance methodsFor: 'arithmetic' stamp: 'FG 5/23/2017 21:18:06'!
+adaptToNumber: aNumber andSend: aSymbol 
 	
-	self assert: (unMetro + unMetro) = dosMetros
-	
-	
-	! !
+	"Operation must be commutative"
+	^self perform: aSymbol with: aNumber! !
+
+
+!Distance methodsFor: 'comparing' stamp: 'FG 5/23/2017 21:33:03'!
+= aDistance 
+	^self amount = (self class from: aDistance) amount! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Distance class' category: #'Distance-Exercise'!
+Distance class
+	instanceVariableNames: ''!
+
+!Distance class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:20:20'!
+from: aDistance
+	self subclassResponsibility ! !
 
 
-!classDefinition: #Metro category: #'Distance-Exercise'!
-Object subclass: #Metro
+!classDefinition: #Centimeter category: #'Distance-Exercise'!
+Distance subclass: #Centimeter
 	instanceVariableNames: 'amount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Distance-Exercise'!
 
-!Metro methodsFor: 'as yet unclassified' stamp: 'T 5/22/2017 22:13:18'!
-+ aMetro 
+!Centimeter methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 19:45:52'!
+amount
+	^amount! !
 
-	^self class with: amount + aMetro amountValue.! !
+!Centimeter methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 19:34:34'!
+initializeWithAmount: anAmount
+	amount := anAmount! !
 
-!Metro methodsFor: 'as yet unclassified' stamp: 'T 5/22/2017 22:13:02'!
-= aMetro
 
-	^amount  = aMetro amountValue.! !
+!Centimeter methodsFor: 'converting' stamp: 'FG 5/23/2017 19:48:21'!
+asCentimeter
+	^self! !
 
-!Metro methodsFor: 'as yet unclassified' stamp: 'T 5/22/2017 22:13:28'!
-amountValue
+!Centimeter methodsFor: 'converting' stamp: 'FG 5/23/2017 19:54:19'!
+asMeter
+	^Meter amount: (amount / 100)! !
 
-	^ amount! !
+!Centimeter methodsFor: 'converting' stamp: 'FG 5/23/2017 21:12:58'!
+asMillimeter
+	^Millimeter amount: (amount * 10)! !
 
-!Metro methodsFor: 'as yet unclassified' stamp: 'T 5/22/2017 21:57:29'!
-initializeWith: aDistanceInMetros
-
-	amount := aDistanceInMetros.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Metro class' category: #'Distance-Exercise'!
-Metro class
+!classDefinition: 'Centimeter class' category: #'Distance-Exercise'!
+Centimeter class
 	instanceVariableNames: ''!
 
-!Metro class methodsFor: 'as yet unclassified' stamp: 'T 5/22/2017 21:54:53'!
-with: aDistanceInMetros
- 
-	^self new initializeWith: aDistanceInMetros ! !
+!Centimeter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 19:34:14'!
+amount: anAmount 
+	^self new initializeWithAmount: anAmount! !
+
+!Centimeter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:31:22'!
+from: aDistance
+	^aDistance asCentimeter! !
+
+
+!classDefinition: #Meter category: #'Distance-Exercise'!
+Distance subclass: #Meter
+	instanceVariableNames: 'amount'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Distance-Exercise'!
+
+!Meter methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 19:46:03'!
+amount
+
+	^ amount! !
+
+!Meter methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 19:33:10'!
+initializeWithAmount: anAmount
+	amount := anAmount! !
+
+
+!Meter methodsFor: 'converting' stamp: 'FG 5/23/2017 19:44:18'!
+asCentimeter
+	^Centimeter amount: (amount * 100)! !
+
+!Meter methodsFor: 'converting' stamp: 'FG 5/23/2017 19:42:13'!
+asMeter
+	^self! !
+
+!Meter methodsFor: 'converting' stamp: 'FG 5/23/2017 21:14:09'!
+asMillimeter
+	^Millimeter amount: (amount * 1000)! !
+
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Meter class' category: #'Distance-Exercise'!
+Meter class
+	instanceVariableNames: ''!
+
+!Meter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 19:32:50'!
+amount: anAmount
+	^self new initializeWithAmount: anAmount! !
+
+!Meter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:31:05'!
+from: aDistance
+	^aDistance asMeter! !
+
+
+!classDefinition: #Millimeter category: #'Distance-Exercise'!
+Distance subclass: #Millimeter
+	instanceVariableNames: 'amount'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Distance-Exercise'!
+
+!Millimeter methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:13:15'!
+amount
+	^amount! !
+
+!Millimeter methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 19:51:21'!
+initializeWithAmount: anAmount 
+	amount := anAmount! !
+
+
+!Millimeter methodsFor: 'converting' stamp: 'FG 5/23/2017 19:54:05'!
+asCentimeter
+	^Centimeter amount: (amount / 10)! !
+
+!Millimeter methodsFor: 'converting' stamp: 'FG 5/23/2017 20:00:46'!
+asMeter
+	^Meter amount: (amount / 1000)! !
+
+
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Millimeter class' category: #'Distance-Exercise'!
+Millimeter class
+	instanceVariableNames: ''!
+
+!Millimeter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 19:51:01'!
+amount: anAmount
+	^self new initializeWithAmount: anAmount! !
+
+!Millimeter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:31:16'!
+from: aDistance
+	^aDistance asMillimeter! !
