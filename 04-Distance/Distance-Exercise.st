@@ -1,13 +1,14 @@
 !classDefinition: #DistanceTest category: #'Distance-Exercise'!
 TestCase subclass: #DistanceTest
-	instanceVariableNames: 'unMetro otroUnMetro dosMetros cienCentimetros thousandMillimeter halfMeter zeroMeter'
+	instanceVariableNames: 'unMetro otroUnMetro dosMetros cienCentimetros thousandMillimeter halfMeter zeroMeter factory'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Distance-Exercise'!
 
-!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:08:25'!
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/25/2017 01:20:45'!
 setUp
 
+	factory := DistanceFactory new.
 	unMetro := Meter amount: 1.
 	otroUnMetro := Meter amount: 1.
 	dosMetros := Meter amount: 2.
@@ -85,6 +86,17 @@ test11DistancesAreAddedCorrectly
 	self assert: unMetro + thousandMillimeter equals: dosMetros.
 	self assert: cienCentimetros + unMetro equals: dosMetros.
 	self assert: thousandMillimeter + unMetro equals: dosMetros.! !
+
+!DistanceTest methodsFor: 'as yet unclassified' stamp: 'FG 5/25/2017 01:33:17'!
+test12DistanceFactoryAnswersMessages
+	"habría que ver que devuelven lo que queremos?"
+	factory minusOneMeter.
+	factory oneCentimeter.
+	factory oneHundredCentimeters.
+	factory oneMeter.
+	factory twoHundredCentimeters.
+	factory twoMeters.
+	factory zeroMeters.! !
 
 
 !classDefinition: #Distance category: #'Distance-Exercise'!
@@ -273,3 +285,46 @@ amount: anAmount
 !Millimeter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:31:16'!
 from: aDistance
 	^aDistance asMillimeter! !
+
+
+!classDefinition: #DistanceFactory category: #'Distance-Exercise'!
+Object subclass: #DistanceFactory
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Distance-Exercise'!
+
+!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 5/25/2017 01:17:25'!
+minusOneMeter
+
+	^Meter amount: -1! !
+
+!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 5/25/2017 01:18:41'!
+oneCentimeter
+
+	^Centimeter amount: 1! !
+
+!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 5/25/2017 01:19:00'!
+oneHundredCentimeters
+
+	^Centimeter amount: 100! !
+
+!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 5/25/2017 01:19:11'!
+oneMeter
+
+	^Meter amount: 1! !
+
+!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 5/25/2017 01:19:27'!
+twoHundredCentimeters
+
+	^Centimeter amount: 200! !
+
+!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 5/25/2017 01:20:05'!
+twoMeters
+
+	^Meter amount: 2! !
+
+!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 5/25/2017 01:20:16'!
+zeroMeters
+
+	^Meter amount: 0! !
