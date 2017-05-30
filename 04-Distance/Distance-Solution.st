@@ -1,9 +1,20 @@
 !classDefinition: #DistanceTest category: #'Distance-Solution'!
 TestCase subclass: #DistanceTest
-	instanceVariableNames: 'unMetro otroUnMetro dosMetros cienCentimetros thousandMillimeter halfMeter zeroMeter factory'
+	instanceVariableNames: 'unMetro otroUnMetro dosMetros cienCentimetros thousandMillimeter halfMeter zeroMeter factory diezKilometros unKilometro milMetros'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Distance-Solution'!
+
+!DistanceTest methodsFor: 'testing' stamp: 'T 5/30/2017 01:08:55'!
+atest12DistanceFactoryAnswersMessages
+	"habría que ver que devuelven lo que queremos?"
+	factory minusOneMeter.
+	factory oneCentimeter.
+	factory oneHundredCentimeters.
+	factory oneMeter.
+	factory twoHundredCentimeters.
+	factory twoMeters.
+	factory zeroMeters.! !
 
 !DistanceTest methodsFor: 'testing' stamp: 'FG 5/23/2017 21:01:34'!
 test01OneMeterShouldBeEqualToOneMeter
@@ -75,19 +86,44 @@ test11DistancesAreAddedCorrectly
 	self assert: cienCentimetros + unMetro equals: dosMetros.
 	self assert: thousandMillimeter + unMetro equals: dosMetros.! !
 
-!DistanceTest methodsFor: 'testing' stamp: 'FG 5/25/2017 01:33:17'!
-test12DistanceFactoryAnswersMessages
-	"habría que ver que devuelven lo que queremos?"
-	factory minusOneMeter.
-	factory oneCentimeter.
-	factory oneHundredCentimeters.
-	factory oneMeter.
-	factory twoHundredCentimeters.
-	factory twoMeters.
-	factory zeroMeters.! !
+!DistanceTest methodsFor: 'testing' stamp: 'T 5/30/2017 01:31:27'!
+test12DistancesAreComparedWithGreaterThanCorrectly
+	self assert: diezKilometros > unMetro.
+	self assert: diezKilometros > unKilometro.
+	self assert: diezKilometros > cienCentimetros.
+	self assert: diezKilometros > thousandMillimeter.
+	self assert: dosMetros > thousandMillimeter.
+	self assert: cienCentimetros > halfMeter.
+	self assert: thousandMillimeter > halfMeter.! !
+
+!DistanceTest methodsFor: 'testing' stamp: 'T 5/30/2017 01:45:13'!
+test13DistancesAreComparedWithLessThanCorrectly
+	self assert: unMetro < diezKilometros.
+	self assert: cienCentimetros < diezKilometros.
+	self assert: thousandMillimeter < diezKilometros.
+	self assert: unKilometro < diezKilometros .! !
+
+!DistanceTest methodsFor: 'testing' stamp: 'T 5/30/2017 01:51:31'!
+test14DistancesAreComparedWithGreaterOrEqualThanCorrectly
+	self assert: diezKilometros >= unMetro.
+	self assert: milMetros >= unKilometro.
+	self assert: unKilometro >= milMetros.
+	self assert: dosMetros >= thousandMillimeter.
+	self assert: cienCentimetros >= halfMeter.
+	self assert: cienCentimetros >= cienCentimetros.
+	self assert: thousandMillimeter >= halfMeter.! !
+
+!DistanceTest methodsFor: 'testing' stamp: 'T 5/30/2017 01:53:07'!
+test15DistancesAreComparedWithLessOrEqualThanCorrectly
+	self assert: unMetro <= diezKilometros.
+	self assert: cienCentimetros <= diezKilometros.
+	self assert: thousandMillimeter <= diezKilometros.
+	self assert: unKilometro <= diezKilometros .
+	self assert: unMetro <= cienCentimetros.
+	self assert: milMetros <= unKilometro.! !
 
 
-!DistanceTest methodsFor: 'setUp' stamp: 'FG 5/25/2017 01:20:45'!
+!DistanceTest methodsFor: 'setUp' stamp: 'T 5/30/2017 01:50:08'!
 setUp
 
 	factory := DistanceFactory new.
@@ -97,7 +133,10 @@ setUp
 	cienCentimetros := Centimeter amount: 100.
 	thousandMillimeter := Millimeter amount: 1000.
 	halfMeter := Meter amount: (1 / 2).
-	zeroMeter := Meter amount: 0.! !
+	zeroMeter := Meter amount: 0.
+	diezKilometros  := Kilometer amount: 10.
+	unKilometro := Kilometer amount: 1.
+	milMetros  := Meter amount: 1000.! !
 
 
 !classDefinition: #Distance category: #'Distance-Solution'!
@@ -109,6 +148,10 @@ Object subclass: #Distance
 
 !Distance methodsFor: 'converting' stamp: 'FG 5/23/2017 20:06:11'!
 asCentimeter
+	self subclassResponsibility ! !
+
+!Distance methodsFor: 'converting' stamp: 'T 5/30/2017 01:41:34'!
+asKilometer
 	self subclassResponsibility ! !
 
 !Distance methodsFor: 'converting' stamp: 'FG 5/23/2017 20:05:52'!
@@ -143,9 +186,25 @@ adaptToNumber: aNumber andSend: aSymbol
 	^self perform: aSymbol with: aNumber! !
 
 
+!Distance methodsFor: 'comparing' stamp: 'T 5/30/2017 01:45:52'!
+< aDistance 
+	^self amount < (self class from: aDistance) amount! !
+
+!Distance methodsFor: 'comparing' stamp: 'T 5/30/2017 01:53:43'!
+<= aDistance 
+	^self amount <= (self class from: aDistance) amount! !
+
 !Distance methodsFor: 'comparing' stamp: 'FG 5/23/2017 21:33:03'!
 = aDistance 
 	^self amount = (self class from: aDistance) amount! !
+
+!Distance methodsFor: 'comparing' stamp: 'T 5/30/2017 01:26:01'!
+> aDistance 
+	^self amount > (self class from: aDistance) amount! !
+
+!Distance methodsFor: 'comparing' stamp: 'T 5/30/2017 01:48:50'!
+>= aDistance 
+	^self amount >= (self class from: aDistance) amount! !
 
 
 !Distance methodsFor: 'accessing' stamp: 'T 5/29/2017 18:25:21'!
@@ -179,6 +238,10 @@ Distance subclass: #Centimeter
 asCentimeter
 	^self! !
 
+!Centimeter methodsFor: 'converting' stamp: 'T 5/30/2017 01:36:21'!
+asKilometer
+	^Kilometer amount: (amount / 100000).! !
+
 !Centimeter methodsFor: 'converting' stamp: 'FG 5/23/2017 19:54:19'!
 asMeter
 	^Meter amount: (amount / 100)! !
@@ -203,13 +266,63 @@ amount
 Centimeter class
 	instanceVariableNames: ''!
 
-!Centimeter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 19:34:14'!
+!Centimeter class methodsFor: 'instance creation' stamp: 'FG 5/23/2017 19:34:14'!
 amount: anAmount 
 	^self new initializeWithAmount: anAmount! !
 
-!Centimeter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:31:22'!
+
+!Centimeter class methodsFor: 'converting' stamp: 'FG 5/23/2017 21:31:22'!
 from: aDistance
 	^aDistance asCentimeter! !
+
+
+!classDefinition: #Kilometer category: #'Distance-Solution'!
+Distance subclass: #Kilometer
+	instanceVariableNames: 'amount'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Distance-Solution'!
+
+!Kilometer methodsFor: 'initialization' stamp: 'T 5/30/2017 01:20:09'!
+initializeWithAmount: anAmount
+	amount := anAmount! !
+
+
+!Kilometer methodsFor: 'accessing' stamp: 'T 5/30/2017 01:26:34'!
+amount
+	^amount ! !
+
+
+!Kilometer methodsFor: 'converting' stamp: 'T 5/30/2017 01:40:36'!
+asCentimeter
+	^Centimeter amount: (amount * 100000).! !
+
+!Kilometer methodsFor: 'converting' stamp: 'T 5/30/2017 01:32:47'!
+asKilometer
+	^self! !
+
+!Kilometer methodsFor: 'converting' stamp: 'T 5/30/2017 01:39:54'!
+asMeter
+	^Meter amount: (amount * 1000).! !
+
+!Kilometer methodsFor: 'converting' stamp: 'T 5/30/2017 01:41:01'!
+asMillimeter
+	^Millimeter amount: (amount * 1000000).! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Kilometer class' category: #'Distance-Solution'!
+Kilometer class
+	instanceVariableNames: ''!
+
+!Kilometer class methodsFor: 'instance creation' stamp: 'T 5/30/2017 01:19:29'!
+amount: anAmount
+	^self new initializeWithAmount: anAmount! !
+
+
+!Kilometer class methodsFor: 'converting' stamp: 'T 5/30/2017 01:27:23'!
+from: aDistance
+	^aDistance asKilometer.! !
 
 
 !classDefinition: #Meter category: #'Distance-Solution'!
@@ -222,6 +335,10 @@ Distance subclass: #Meter
 !Meter methodsFor: 'converting' stamp: 'FG 5/23/2017 19:44:18'!
 asCentimeter
 	^Centimeter amount: (amount * 100)! !
+
+!Meter methodsFor: 'converting' stamp: 'T 5/30/2017 01:29:46'!
+asKilometer
+	^Kilometer amount: (amount / 1000)! !
 
 !Meter methodsFor: 'converting' stamp: 'FG 5/23/2017 19:42:13'!
 asMeter
@@ -248,11 +365,12 @@ amount
 Meter class
 	instanceVariableNames: ''!
 
-!Meter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 19:32:50'!
+!Meter class methodsFor: 'instance creation' stamp: 'FG 5/23/2017 19:32:50'!
 amount: anAmount
 	^self new initializeWithAmount: anAmount! !
 
-!Meter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:31:05'!
+
+!Meter class methodsFor: 'converting' stamp: 'FG 5/23/2017 21:31:05'!
 from: aDistance
 	^aDistance asMeter! !
 
@@ -267,6 +385,10 @@ Distance subclass: #Millimeter
 !Millimeter methodsFor: 'converting' stamp: 'FG 5/23/2017 19:54:05'!
 asCentimeter
 	^Centimeter amount: (amount / 10)! !
+
+!Millimeter methodsFor: 'converting' stamp: 'T 5/30/2017 01:37:32'!
+asKilometer
+	^Kilometer amount: (amount / 1000000).! !
 
 !Millimeter methodsFor: 'converting' stamp: 'FG 5/23/2017 20:00:46'!
 asMeter
@@ -292,11 +414,12 @@ amount
 Millimeter class
 	instanceVariableNames: ''!
 
-!Millimeter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 19:51:01'!
+!Millimeter class methodsFor: 'instance creation' stamp: 'FG 5/23/2017 19:51:01'!
 amount: anAmount
 	^self new initializeWithAmount: anAmount! !
 
-!Millimeter class methodsFor: 'as yet unclassified' stamp: 'FG 5/23/2017 21:31:16'!
+
+!Millimeter class methodsFor: 'converting' stamp: 'FG 5/23/2017 21:31:16'!
 from: aDistance
 	^aDistance asMillimeter! !
 
