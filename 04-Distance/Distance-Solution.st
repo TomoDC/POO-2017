@@ -1,20 +1,9 @@
 !classDefinition: #DistanceTest category: #'Distance-Solution'!
 TestCase subclass: #DistanceTest
-	instanceVariableNames: 'unMetro otroUnMetro dosMetros cienCentimetros thousandMillimeter halfMeter zeroMeter factory diezKilometros unKilometro milMetros'
+	instanceVariableNames: 'unMetro otroUnMetro dosMetros cienCentimetros thousandMillimeter halfMeter zeroMeter factory diezKilometros unKilometro milMetros tresMetros'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Distance-Solution'!
-
-!DistanceTest methodsFor: 'testing' stamp: 'T 5/30/2017 01:08:55'!
-atest12DistanceFactoryAnswersMessages
-	"habría que ver que devuelven lo que queremos?"
-	factory minusOneMeter.
-	factory oneCentimeter.
-	factory oneHundredCentimeters.
-	factory oneMeter.
-	factory twoHundredCentimeters.
-	factory twoMeters.
-	factory zeroMeters.! !
 
 !DistanceTest methodsFor: 'testing' stamp: 'FG 5/23/2017 21:01:34'!
 test01OneMeterShouldBeEqualToOneMeter
@@ -122,8 +111,32 @@ test15DistancesAreComparedWithLessOrEqualThanCorrectly
 	self assert: unMetro <= cienCentimetros.
 	self assert: milMetros <= unKilometro.! !
 
+!DistanceTest methodsFor: 'testing' stamp: 'FG 5/30/2017 18:47:11'!
+test16DistanceIntervalsKnowTheirBounds
+	| interval |
+	interval := unMetro to: tresMetros.
+	self assert: (interval first) equals: unMetro.
+	self assert: (interval last) equals: tresMetros.! !
 
-!DistanceTest methodsFor: 'setUp' stamp: 'T 5/30/2017 01:50:08'!
+!DistanceTest methodsFor: 'testing' stamp: 'FG 5/30/2017 18:47:36'!
+test17DistanceIntervalsKnowTheirStep
+	| interval |
+	interval := unMetro to: tresMetros by: unMetro.
+	self assert: (interval step) equals: unMetro.! !
+
+!DistanceTest methodsFor: 'testing' stamp: 'FG 5/30/2017 18:51:09'!
+test18DistanceIntervalsCanBeIterated
+	| i meterInterval numberInterval |
+	meterInterval := unMetro to: tresMetros by: unMetro.
+	numberInterval := 1 to: 3 by: 1.
+	i := 1.
+	meterInterval do: [ :aDistance |
+		self assert: (aDistance amount) equals: (numberInterval at: i).
+		i := i + 1.
+	].! !
+
+
+!DistanceTest methodsFor: 'setUp' stamp: 'FG 5/30/2017 18:39:37'!
 setUp
 
 	factory := DistanceFactory new.
@@ -136,7 +149,8 @@ setUp
 	zeroMeter := Meter amount: 0.
 	diezKilometros  := Kilometer amount: 10.
 	unKilometro := Kilometer amount: 1.
-	milMetros  := Meter amount: 1000.! !
+	milMetros  := Meter amount: 1000.
+	tresMetros := Meter amount: 3.! !
 
 
 !classDefinition: #Distance category: #'Distance-Solution'!
@@ -215,6 +229,15 @@ amount
 !Distance methodsFor: 'initialization' stamp: 'T 5/29/2017 18:26:27'!
 initializeWithAmount: anAmount
 	self subclassResponsibility ! !
+
+
+!Distance methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:40:50'!
+to: aDistance
+	^DistanceInterval from: self to: (self class from: aDistance) by: (self class amount: 1)! !
+
+!Distance methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:48:23'!
+to: aLastDistance by: aStepDistance 
+	^DistanceInterval from: self to: (self class from: aLastDistance) by: (self class from: aStepDistance )! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -465,3 +488,45 @@ twoMeters
 zeroMeters
 
 	^Meter amount: 0! !
+
+
+!classDefinition: #DistanceInterval category: #'Distance-Solution'!
+Object subclass: #DistanceInterval
+	instanceVariableNames: 'first last step'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Distance-Solution'!
+
+!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:53:01'!
+do: aBlockClosure 
+	(self first amount) to: (self last amount) by: (self step amount) do: [ :anAmount |
+		aBlockClosure value: (self first class amount: anAmount)
+	].! !
+
+!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:43:41'!
+first
+	^first! !
+
+!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:43:23'!
+initializeWithFirst: aFirstDistance last: aLastDistance step: aStepDistance 
+	first := aFirstDistance.
+	last := aLastDistance.
+	step := aStepDistance.! !
+
+!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:43:50'!
+last
+	^last! !
+
+!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:48:32'!
+step
+	^step! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'DistanceInterval class' category: #'Distance-Solution'!
+DistanceInterval class
+	instanceVariableNames: ''!
+
+!DistanceInterval class methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:42:49'!
+from: aFirstDistance to: aLastDistance by: aStepDistance 
+	^self new initializeWithFirst: aFirstDistance last: aLastDistance step: aStepDistance.! !
