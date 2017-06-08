@@ -31,9 +31,13 @@ initializeWithAmount: aNumber unit: aUnit
 - aDistance 
 	^self + (aDistance negated)! !
 
-!Distance methodsFor: 'arithmetic' stamp: 'FG 6/1/2017 20:23:14'!
-/ aNumber
-	^self unit amount: (self amount / aNumber)! !
+!Distance methodsFor: 'arithmetic' stamp: 'T 6/8/2017 16:37:08'!
+/ aDividend
+	(aDividend isKindOf: self amount class) ifTrue: [
+		^self unit amount: (self amount / aDividend )]
+	ifFalse: [
+		^self class amount: self amount unit: self unit / aDividend ]
+! !
 
 !Distance methodsFor: 'arithmetic' stamp: 'FG 5/23/2017 21:18:06'!
 adaptToNumber: aNumber andSend: aSymbol 
@@ -58,10 +62,10 @@ negated
 < aDistance 
 	^self amount < (aDistance convertTo: (self unit)) amount! !
 
-!Distance methodsFor: 'comparing' stamp: 'FG 6/6/2017 20:43:28'!
+!Distance methodsFor: 'comparing' stamp: 'T 6/8/2017 16:46:52'!
 = aDistance 
 	^(aDistance isKindOf: self class) and: [
-		self amount = 0 & aDistance amount = 0 | ((self unit base = aDistance unit base) and: [self amount = (aDistance convertTo: (self unit)) amount])
+		self amount = 0 & aDistance amount = 0 | ((self unit compatibleWith: aDistance unit) and: [self amount = aDistance amount])
 	].! !
 
 
@@ -939,10 +943,12 @@ test03CanOperateBetweenSameTypesOfUnit
 	self assert: (self peso amount: 100) equals: (self peso amount: 50) * 2.
 	self assert: (self peso amount: 100) equals: (self peso amount: 200) / 2.! !
 
-!MeasureTest methodsFor: 'testing' stamp: 'FG 6/5/2017 19:54:32'!
+!MeasureTest methodsFor: 'testing' stamp: 'T 6/8/2017 15:51:17'!
 test04CanOperateBetweenDifferentTypesOfUnit
 
-	self assert: ((self peso amount: 100) + (self liter amount: 100)) equals: ((self liter amount: 100) + (self peso amount: 100)).! !
+	self assert: ((self peso amount: 100) + (self liter amount: 100)) equals: ((self liter amount: 100) + (self peso amount: 100)).
+	self assert: (self peso amount: 100) - (self liter amount: 100) equals: (self peso amount: 100) - (self liter amount: 100).
+	self assert: (self peso amount: 100) + (self peso amount: 100) + (self liter amount: 100) equals: (self peso amount: 200) + (self liter amount: 100).! !
 
 !MeasureTest methodsFor: 'testing' stamp: 'FG 6/5/2017 20:49:02'!
 test05ZeroesShouldAllBeEqual
@@ -970,6 +976,11 @@ test08MeasuresOfSameUnitFormATotalOrder
 	
 	self assert: (self peso amount: 1) > (self centavo amount: 2).! !
 
+!MeasureTest methodsFor: 'testing' stamp: 'T 6/8/2017 16:00:42'!
+test09CanRepresentMeasureOfCompoundUnits
+
+	self assert: (self meter amount: 10) / self seconds equals: (self meter amount: 10) / self seconds ! !
+
 
 !MeasureTest methodsFor: 'units' stamp: 'FG 6/6/2017 20:34:43'!
 centavo
@@ -986,6 +997,10 @@ meter
 !MeasureTest methodsFor: 'units' stamp: 'FG 6/6/2017 20:26:21'!
 peso
 	^Unit peso! !
+
+!MeasureTest methodsFor: 'units' stamp: 'T 6/8/2017 15:59:44'!
+seconds
+	^Unit seconds! !
 
 
 !classDefinition: #CompoundMeasure category: #'Distance-Solution'!
@@ -1020,6 +1035,45 @@ CompoundMeasure class
 !CompoundMeasure class methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:10:43'!
 of: anArrayOfMeasures
 	^self new initializeWithMeasures: anArrayOfMeasures ! !
+
+
+!classDefinition: #CompoundUnit category: #'Distance-Solution'!
+Object subclass: #CompoundUnit
+	instanceVariableNames: 'numerator denominator'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Distance-Solution'!
+
+!CompoundUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:38:46'!
+base
+	self shouldBeImplemented! !
+
+!CompoundUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:43:09'!
+compatibleWith: aCompoundUnit 
+	^self class = aCompoundUnit class and: [ numerator = aCompoundUnit numerator & denominator = aCompoundUnit denominator ].! !
+
+!CompoundUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:43:55'!
+denominator
+	^denominator.! !
+
+!CompoundUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:31:37'!
+initializeWith: anUnit dividedBy: anUnit2 
+	numerator := anUnit.
+	denominator := anUnit2.! !
+
+!CompoundUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:43:29'!
+numerator
+	^ numerator .! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CompoundUnit class' category: #'Distance-Solution'!
+CompoundUnit class
+	instanceVariableNames: ''!
+
+!CompoundUnit class methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:27:31'!
+with: anUnit dividedBy: anUnit2 
+	^self new initializeWith: anUnit dividedBy: anUnit2 .! !
 
 
 !classDefinition: #DistanceFactory category: #'Distance-Solution'!
@@ -1075,6 +1129,10 @@ Object subclass: #Unit
 !Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:52:27'!
 * aNumber
 	^self amount: aNumber! !
+
+!Unit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:26:01'!
+/ anUnit 
+	^ CompoundUnit with: self dividedBy: anUnit! !
 
 !Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 20:01:14'!
 <= aUnit
@@ -1184,3 +1242,7 @@ millimeter
 !Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:16:40'!
 peso
 	^self baseNamed: 'peso'! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 15:59:04'!
+seconds
+	^self baseNamed: 'seconds'! !
