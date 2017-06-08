@@ -1,25 +1,27 @@
-!classDefinition: #Distance category: #'Distance-Solution'!
-Magnitude subclass: #Distance
+!classDefinition: #Measure category: #'Measure-Solution'!
+Magnitude subclass: #Measure
 	instanceVariableNames: 'amount unit'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Distance-Solution'!
+	category: 'Measure-Solution'!
 
-!Distance methodsFor: 'converting' stamp: 'FG 6/6/2017 19:18:55'!
+!Measure methodsFor: 'converting' stamp: 'FG 6/8/2017 17:23:57'!
 convertTo: aUnit 
-	^self class amount: (self amount * (self unit factorTo: aUnit)) unit: aUnit.! !
+	self unit = aUnit ifTrue: [^self] ifFalse: [
+		^self class amount: (self amount * (self unit factorTo: aUnit)) unit: aUnit
+	].! !
 
-!Distance methodsFor: 'converting' stamp: 'FG 6/1/2017 19:29:56'!
+!Measure methodsFor: 'converting' stamp: 'FG 6/1/2017 19:29:56'!
 initializeWithAmount: aNumber unit: aUnit
 	amount := aNumber.
 	unit := aUnit.! !
 
 
-!Distance methodsFor: 'arithmetic' stamp: 'FG 6/1/2017 20:23:00'!
+!Measure methodsFor: 'arithmetic' stamp: 'FG 6/1/2017 20:23:00'!
 * aNumber
 	^self unit amount: (self amount * aNumber)! !
 
-!Distance methodsFor: 'arithmetic' stamp: 'FG 6/6/2017 20:10:26'!
+!Measure methodsFor: 'arithmetic' stamp: 'FG 6/6/2017 20:10:26'!
 + aDistance
 	(self unit base = aDistance unit base) ifTrue: [
 		^self unit amount: (self amount + (aDistance convertTo: self unit) amount)
@@ -27,146 +29,138 @@ initializeWithAmount: aNumber unit: aUnit
 		^CompoundMeasure of: {self . aDistance}
 	]! !
 
-!Distance methodsFor: 'arithmetic' stamp: 'FG 6/1/2017 19:55:14'!
+!Measure methodsFor: 'arithmetic' stamp: 'FG 6/1/2017 19:55:14'!
 - aDistance 
 	^self + (aDistance negated)! !
 
-!Distance methodsFor: 'arithmetic' stamp: 'T 6/8/2017 16:37:08'!
+!Measure methodsFor: 'arithmetic' stamp: 'FG 6/8/2017 17:30:10'!
 / aDividend
-	(aDividend isKindOf: self amount class) ifTrue: [
+	(aDividend isKindOf: Number) ifTrue: [
 		^self unit amount: (self amount / aDividend )]
 	ifFalse: [
 		^self class amount: self amount unit: self unit / aDividend ]
 ! !
 
-!Distance methodsFor: 'arithmetic' stamp: 'FG 5/23/2017 21:18:06'!
+!Measure methodsFor: 'arithmetic' stamp: 'FG 5/23/2017 21:18:06'!
 adaptToNumber: aNumber andSend: aSymbol 
 	
 	"Operation must be commutative"
 	^self perform: aSymbol with: aNumber! !
 
-!Distance methodsFor: 'arithmetic' stamp: 'FG 6/1/2017 20:46:27'!
+!Measure methodsFor: 'arithmetic' stamp: 'FG 6/1/2017 20:46:27'!
 hash
 	^(self amount * self unit factorToBase) hash! !
 
-!Distance methodsFor: 'arithmetic' stamp: 'FG 6/1/2017 20:36:08'!
+!Measure methodsFor: 'arithmetic' stamp: 'FG 6/1/2017 20:36:08'!
 isZero
 	^self amount isZero! !
 
-!Distance methodsFor: 'arithmetic' stamp: 'FG 6/1/2017 20:23:21'!
+!Measure methodsFor: 'arithmetic' stamp: 'FG 6/1/2017 20:23:21'!
 negated
 	^self unit amount: (self amount negated)! !
 
 
-!Distance methodsFor: 'comparing' stamp: 'FG 6/1/2017 19:51:52'!
+!Measure methodsFor: 'comparing' stamp: 'FG 6/1/2017 19:51:52'!
 < aDistance 
 	^self amount < (aDistance convertTo: (self unit)) amount! !
 
-!Distance methodsFor: 'comparing' stamp: 'T 6/8/2017 16:46:52'!
+!Measure methodsFor: 'comparing' stamp: 'FG 6/8/2017 17:28:40'!
 = aDistance 
 	^(aDistance isKindOf: self class) and: [
-		self amount = 0 & aDistance amount = 0 | ((self unit compatibleWith: aDistance unit) and: [self amount = aDistance amount])
+		self amount = 0 & aDistance amount = 0 | ((self unit compatibleWith: aDistance unit) and: [self amount = (aDistance convertTo: (self unit)) amount])
 	].! !
 
 
-!Distance methodsFor: 'accessing' stamp: 'FG 6/1/2017 19:51:21'!
+!Measure methodsFor: 'accessing' stamp: 'FG 6/1/2017 19:51:21'!
 amount
 	^amount! !
 
-!Distance methodsFor: 'accessing' stamp: 'FG 6/1/2017 19:25:48'!
+!Measure methodsFor: 'accessing' stamp: 'FG 6/1/2017 19:25:48'!
 unit
 	^unit! !
 
 
-!Distance methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:21:16'!
+!Measure methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 18:57:43'!
 to: aDistance
-	^DistanceInterval from: self to: (aDistance convertTo: self unit) by: (self unit amount: 1)! !
+	^MeasureInterval from: self to: (aDistance convertTo: self unit) by: (self unit amount: 1)! !
 
-!Distance methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:22:21'!
+!Measure methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 18:57:39'!
 to: aLastDistance by: aStepDistance 
-	^DistanceInterval from: self to: (aLastDistance convertTo: self unit) by: (aStepDistance convertTo: self unit)! !
+	^MeasureInterval from: self to: (aLastDistance convertTo: self unit) by: (aStepDistance convertTo: self unit)! !
 
 
-!Distance methodsFor: 'printing' stamp: 'FG 6/5/2017 19:33:39'!
+!Measure methodsFor: 'printing' stamp: 'FG 6/8/2017 17:59:34'!
 printOn: aStream
 	self amount printOn: aStream.
-	' ' printOn: aStream.
+	aStream nextPutAll: ' '.
 	self unit printOn: aStream.
-	self amount > 1 ifTrue: ['s' printOn: aStream].! !
-
-!Distance methodsFor: 'printing' stamp: 'FG 6/1/2017 20:53:17'!
-printString
-	self amount > 1 ifTrue: [
-		^self amount printString, ' ', self unit printString, 's'
-	] ifFalse: [
-		^self amount printString, ' ', self unit printString
-	].! !
+	self amount > 1 ifTrue: [aStream nextPutAll: 's'].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Distance class' category: #'Distance-Solution'!
-Distance class
+!classDefinition: 'Measure class' category: #'Measure-Solution'!
+Measure class
 	instanceVariableNames: ''!
 
-!Distance class methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:19:24'!
+!Measure class methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 17:28:51'!
 amount: aNumber unit: aUnit
-	^self new initializeWithAmount: aNumber unit: aUnit! !
+	^(self new initializeWithAmount: aNumber unit: aUnit)! !
 
 
-!classDefinition: #DistanceInterval category: #'Distance-Solution'!
-SequenceableCollection subclass: #DistanceInterval
+!classDefinition: #MeasureInterval category: #'Measure-Solution'!
+SequenceableCollection subclass: #MeasureInterval
 	instanceVariableNames: 'first last step'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Distance-Solution'!
+	category: 'Measure-Solution'!
 
-!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 21:00:42'!
+!MeasureInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 21:00:42'!
 at: index
 	^first + ((index - 1) * step)! !
 
-!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:34:15'!
+!MeasureInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:34:15'!
 by
 	^self step! !
 
-!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:33:53'!
+!MeasureInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:33:53'!
 from
 	^self first! !
 
-!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:48:37'!
+!MeasureInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:48:37'!
 initializeWithFirst: aFirstDistance last: aLastDistance step: aStepDistance 
 	first := aFirstDistance.
 	last := aLastDistance convertTo: first unit.
 	step := aStepDistance convertTo: first unit.! !
 
-!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 21:07:32'!
+!MeasureInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 21:07:32'!
 size
 	^1 + (((last amount - first amount) abs) / (step amount abs))! !
 
-!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:48:32'!
+!MeasureInterval methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:48:32'!
 step
 	^step! !
 
-!DistanceInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:34:03'!
+!MeasureInterval methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:34:03'!
 to
 	^self last! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DistanceInterval class' category: #'Distance-Solution'!
-DistanceInterval class
+!classDefinition: 'MeasureInterval class' category: #'Measure-Solution'!
+MeasureInterval class
 	instanceVariableNames: ''!
 
-!DistanceInterval class methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:42:49'!
+!MeasureInterval class methodsFor: 'as yet unclassified' stamp: 'FG 5/30/2017 18:42:49'!
 from: aFirstDistance to: aLastDistance by: aStepDistance 
 	^self new initializeWithFirst: aFirstDistance last: aLastDistance step: aStepDistance.! !
 
 
-!classDefinition: #CatedraDistanceTest category: #'Distance-Solution'!
+!classDefinition: #CatedraDistanceTest category: #'Measure-Solution'!
 TestCase subclass: #CatedraDistanceTest
 	instanceVariableNames: 'factory'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Distance-Solution'!
+	category: 'Measure-Solution'!
 
 !CatedraDistanceTest methodsFor: '1 - Test equality' stamp: 'HernanWilkinson 4/18/2011 15:04'!
 test01ObjectsRepresentingSameDistanceShouldBeEqual
@@ -644,22 +638,35 @@ test32DistanceIntervalCanBeEnumeratedWithSpecificStep
 ! !
 
 
-!CatedraDistanceTest methodsFor: 'distance units' stamp: 'FG 6/6/2017 20:26:09'!
+
+
+!CatedraDistanceTest methodsFor: 'setup' stamp: 'FG 6/8/2017 18:59:05'!
+setUp
+
+	| factoryClass |
+	
+	factoryClass := Smalltalk classNamed: #MeasureFactory.
+	self assert: factoryClass notNil description: 'No se entrego la clase DistanceFactory'.
+	
+	factory := factoryClass.! !
+
+
+!CatedraDistanceTest methodsFor: 'Measure units' stamp: 'FG 6/6/2017 20:26:09'!
 centimeter
 
 	^Unit centimeter! !
 
-!CatedraDistanceTest methodsFor: 'distance units' stamp: 'FG 6/6/2017 20:26:14'!
+!CatedraDistanceTest methodsFor: 'Measure units' stamp: 'FG 6/6/2017 20:26:14'!
 decameter
 	
 	^Unit decameter! !
 
-!CatedraDistanceTest methodsFor: 'distance units' stamp: 'FG 6/6/2017 20:26:18'!
+!CatedraDistanceTest methodsFor: 'Measure units' stamp: 'FG 6/6/2017 20:26:18'!
 decimeter
 	
 	^Unit decimeter! !
 
-!CatedraDistanceTest methodsFor: 'distance units' stamp: 'HAW 5/31/2017 12:37:50'!
+!CatedraDistanceTest methodsFor: 'Measure units' stamp: 'HAW 5/31/2017 12:37:50'!
 distanceUnits 
 
 	"¿Quién se anima a explicar cómo funciona este método? 
@@ -674,28 +681,28 @@ distanceUnits
 	
 ! !
 
-!CatedraDistanceTest methodsFor: 'distance units' stamp: 'FG 6/6/2017 20:26:17'!
+!CatedraDistanceTest methodsFor: 'Measure units' stamp: 'FG 6/6/2017 20:26:17'!
 hectometer
 	
 	^Unit hectometer! !
 
-!CatedraDistanceTest methodsFor: 'distance units' stamp: 'FG 6/6/2017 20:26:15'!
+!CatedraDistanceTest methodsFor: 'Measure units' stamp: 'FG 6/6/2017 20:26:15'!
 kilometer
 	
 	^Unit kilometer! !
 
-!CatedraDistanceTest methodsFor: 'distance units' stamp: 'FG 6/6/2017 20:26:11'!
+!CatedraDistanceTest methodsFor: 'Measure units' stamp: 'FG 6/6/2017 20:26:11'!
 meter
 
 	^Unit meter! !
 
-!CatedraDistanceTest methodsFor: 'distance units' stamp: 'FG 6/6/2017 20:26:13'!
+!CatedraDistanceTest methodsFor: 'Measure units' stamp: 'FG 6/6/2017 20:26:13'!
 millimeter
 	
 	^Unit millimeter! !
 
 
-!CatedraDistanceTest methodsFor: 'distance measures' stamp: 'HAW 5/31/2017 11:20:12'!
+!CatedraDistanceTest methodsFor: 'Measure measures' stamp: 'HAW 5/31/2017 11:20:12'!
 distanceExamples
 
 	"¿Quién se anima a explicar cómo funciona este método? 
@@ -710,59 +717,48 @@ distanceExamples
 	
 ! !
 
-!CatedraDistanceTest methodsFor: 'distance measures' stamp: 'HAW 5/31/2017 11:03:32'!
+!CatedraDistanceTest methodsFor: 'Measure measures' stamp: 'HAW 5/31/2017 11:03:32'!
 minusOneMeter 
 	
 	^factory minusOneMeter! !
 
-!CatedraDistanceTest methodsFor: 'distance measures' stamp: 'HAW 5/31/2017 11:03:45'!
+!CatedraDistanceTest methodsFor: 'Measure measures' stamp: 'HAW 5/31/2017 11:03:45'!
 oneCentimeter
 	
 	^factory oneCentimeter ! !
 
-!CatedraDistanceTest methodsFor: 'distance measures' stamp: 'HAW 5/31/2017 11:03:53'!
+!CatedraDistanceTest methodsFor: 'Measure measures' stamp: 'HAW 5/31/2017 11:03:53'!
 oneHundredCentimeters
 	
 	^factory oneHundredCentimeters ! !
 
-!CatedraDistanceTest methodsFor: 'distance measures' stamp: 'HAW 5/31/2017 11:04:03'!
+!CatedraDistanceTest methodsFor: 'Measure measures' stamp: 'HAW 5/31/2017 11:04:03'!
 oneMeter
 	
 	^factory oneMeter ! !
 
-!CatedraDistanceTest methodsFor: 'distance measures' stamp: 'HAW 5/31/2017 11:04:18'!
+!CatedraDistanceTest methodsFor: 'Measure measures' stamp: 'HAW 5/31/2017 11:04:18'!
 twoHundredCentimeters
 	
 	^factory twoHundredCentimeters ! !
 
-!CatedraDistanceTest methodsFor: 'distance measures' stamp: 'HAW 5/31/2017 11:04:29'!
+!CatedraDistanceTest methodsFor: 'Measure measures' stamp: 'HAW 5/31/2017 11:04:29'!
 twoMeters
 	
 	^factory twoMeters ! !
 
-!CatedraDistanceTest methodsFor: 'distance measures' stamp: 'HAW 5/31/2017 11:04:38'!
+!CatedraDistanceTest methodsFor: 'Measure measures' stamp: 'HAW 5/31/2017 11:04:38'!
 zeroMeters
 
 	^factory zeroMeters ! !
 
-
-!CatedraDistanceTest methodsFor: 'setup' stamp: 'HAW 5/31/2017 11:06:46'!
-setUp
-
-	| factoryClass |
-	
-	factoryClass := Smalltalk classNamed: #DistanceFactory.
-	self assert: factoryClass notNil description: 'No se entrego la clase DistanceFactory'.
-	
-	factory := factoryClass new.! !
-
 
-!classDefinition: #DistanceTest category: #'Distance-Solution'!
+!classDefinition: #DistanceTest category: #'Measure-Solution'!
 TestCase subclass: #DistanceTest
 	instanceVariableNames: 'unMetro otroUnMetro dosMetros cienCentimetros thousandMillimeter halfMeter zeroMeter factory diezKilometros unKilometro milMetros tresMetros'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Distance-Solution'!
+	category: 'Measure-Solution'!
 
 !DistanceTest methodsFor: 'testing' stamp: 'FG 5/23/2017 21:01:34'!
 test01OneMeterShouldBeEqualToOneMeter
@@ -899,29 +895,29 @@ test19DistancesHaveUnits
 	self assert: (unMetro unit printString) equals: 'meter'! !
 
 
-!DistanceTest methodsFor: 'setUp' stamp: 'FG 6/6/2017 20:26:01'!
+!DistanceTest methodsFor: 'setUp' stamp: 'FG 6/8/2017 18:41:49'!
 setUp
 
-	factory := DistanceFactory new.
-	unMetro := Distance amount: 1 unit: (Unit meter).
-	otroUnMetro := Distance amount: 1 unit: (Unit meter).
-	dosMetros := Distance amount: 2 unit: (Unit meter).
-	cienCentimetros := Distance amount: 100 unit: (Unit centimeter).
-	thousandMillimeter := Distance amount: 1000 unit: (Unit millimeter).
-	halfMeter := Distance amount: (1 / 2) unit: (Unit meter).
-	zeroMeter := Distance amount: 0 unit: (Unit meter).
-	diezKilometros  := Distance amount: 10 unit: (Unit kilometer).
-	unKilometro := Distance amount: 1 unit: (Unit kilometer).
-	milMetros  := Distance amount: 1000 unit: (Unit meter).
-	tresMetros := Distance amount: 3 unit: (Unit meter).! !
+	factory := MeasureFactory new.
+	unMetro := Measure amount: 1 unit: (Unit meter).
+	otroUnMetro := Measure amount: 1 unit: (Unit meter).
+	dosMetros := Measure amount: 2 unit: (Unit meter).
+	cienCentimetros := Measure amount: 100 unit: (Unit centimeter).
+	thousandMillimeter := Measure amount: 1000 unit: (Unit millimeter).
+	halfMeter := Measure amount: (1 / 2) unit: (Unit meter).
+	zeroMeter := Measure amount: 0 unit: (Unit meter).
+	diezKilometros  := Measure amount: 10 unit: (Unit kilometer).
+	unKilometro := Measure amount: 1 unit: (Unit kilometer).
+	milMetros  := Measure amount: 1000 unit: (Unit meter).
+	tresMetros := Measure amount: 3 unit: (Unit meter).! !
 
 
-!classDefinition: #MeasureTest category: #'Distance-Solution'!
+!classDefinition: #MeasureTest category: #'Measure-Solution'!
 TestCase subclass: #MeasureTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Distance-Solution'!
+	category: 'Measure-Solution'!
 
 !MeasureTest methodsFor: 'testing' stamp: 'FG 6/5/2017 19:06:55'!
 test01SameAmountsOfAMeasureShouldBeEqual
@@ -976,15 +972,26 @@ test08MeasuresOfSameUnitFormATotalOrder
 	
 	self assert: (self peso amount: 1) > (self centavo amount: 2).! !
 
-!MeasureTest methodsFor: 'testing' stamp: 'T 6/8/2017 16:00:42'!
+!MeasureTest methodsFor: 'testing' stamp: 'FG 6/8/2017 19:02:41'!
 test09CanRepresentMeasureOfCompoundUnits
 
-	self assert: (self meter amount: 10) / self seconds equals: (self meter amount: 10) / self seconds ! !
+	self assert: (self meter amount: 10) / self second equals: (self meter amount: 10) / self second.
+	self assert: (self meter amount: 1000) / self second equals: (self kilometer amount: 1) / self second.
+	self assert: (self meter amount: 1/3600) / self second equals: (self meter amount: 1) / self hour.
+	self assert: (self meter amount: 1000/3600) / self second equals: (self kilometer amount: 1) / self hour.! !
 
 
 !MeasureTest methodsFor: 'units' stamp: 'FG 6/6/2017 20:34:43'!
 centavo
 	^Unit centavo! !
+
+!MeasureTest methodsFor: 'units' stamp: 'FG 6/8/2017 18:35:30'!
+hour
+	^Unit hour! !
+
+!MeasureTest methodsFor: 'units' stamp: 'FG 6/8/2017 18:12:12'!
+kilometer
+	^Unit kilometer! !
 
 !MeasureTest methodsFor: 'units' stamp: 'FG 6/6/2017 20:26:23'!
 liter
@@ -998,17 +1005,17 @@ meter
 peso
 	^Unit peso! !
 
-!MeasureTest methodsFor: 'units' stamp: 'T 6/8/2017 15:59:44'!
-seconds
-	^Unit seconds! !
+!MeasureTest methodsFor: 'units' stamp: 'FG 6/8/2017 18:06:38'!
+second
+	^Unit second! !
 
 
-!classDefinition: #CompoundMeasure category: #'Distance-Solution'!
+!classDefinition: #CompoundMeasure category: #'Measure-Solution'!
 Object subclass: #CompoundMeasure
 	instanceVariableNames: 'amounts'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Distance-Solution'!
+	category: 'Measure-Solution'!
 
 !CompoundMeasure methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 20:42:07'!
 = aCompoundMeasure
@@ -1028,7 +1035,7 @@ initializeWithMeasures: anArrayOfMeasures
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CompoundMeasure class' category: #'Distance-Solution'!
+!classDefinition: 'CompoundMeasure class' category: #'Measure-Solution'!
 CompoundMeasure class
 	instanceVariableNames: ''!
 
@@ -1037,212 +1044,375 @@ of: anArrayOfMeasures
 	^self new initializeWithMeasures: anArrayOfMeasures ! !
 
 
-!classDefinition: #CompoundUnit category: #'Distance-Solution'!
-Object subclass: #CompoundUnit
+!classDefinition: #MeasureFactory category: #'Measure-Solution'!
+Object subclass: #MeasureFactory
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Measure-Solution'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'MeasureFactory class' category: #'Measure-Solution'!
+MeasureFactory class
+	instanceVariableNames: ''!
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/8/2017 18:48:37'!
+centimeter
+
+	^Unit centimeter! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/8/2017 18:48:42'!
+decameter
+
+	^Unit decameter! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/8/2017 18:48:47'!
+decimeter
+
+	^Unit decimeter! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/8/2017 18:49:10'!
+hectometer
+
+	^Unit hectometer! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/8/2017 18:48:59'!
+kilometer
+
+	^Unit kilometer! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/8/2017 18:48:28'!
+meter
+
+	^Unit meter! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/8/2017 18:48:53'!
+millimeter
+
+	^Unit millimeter! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/6/2017 20:26:28'!
+minusOneMeter
+
+	^Measure amount: -1 unit: (Unit meter)! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/6/2017 20:26:31'!
+oneCentimeter
+
+	^Measure amount: 1 unit: (Unit centimeter)! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/6/2017 20:26:30'!
+oneHundredCentimeters
+
+	^Measure amount: 100 unit: (Unit centimeter)! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/6/2017 20:26:35'!
+oneMeter
+
+	^Measure amount: 1 unit: (Unit meter)! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/6/2017 20:26:27'!
+twoHundredCentimeters
+
+	^Measure amount: 200 unit: (Unit centimeter)! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/6/2017 20:26:34'!
+twoMeters
+
+	^Measure amount: 2 unit: (Unit meter)! !
+
+!MeasureFactory class methodsFor: 'distance' stamp: 'FG 6/6/2017 20:26:25'!
+zeroMeters
+
+	^Measure amount: 0 unit: (Unit meter)! !
+
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:43:05'!
+day
+
+	^Unit day! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:43:53'!
+hour
+
+	^Unit minute! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:43:55'!
+minute
+
+	^Unit minute! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:46:36'!
+oneDay
+
+	^Unit day amount: 1! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:46:44'!
+oneHour
+
+	^Unit hour amount: 1! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:47:05'!
+oneMinute
+	^Unit minute amount: 1! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:47:01'!
+oneSecond
+	^Unit second amount: 1! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:43:47'!
+second
+
+	^Unit second! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:47:14'!
+sixtyMinutes
+	^Unit minute amount: 60! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:47:38'!
+sixtyOneSeconds
+	^Unit seconds amount: 61! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:47:44'!
+sixtySeconds
+	^Unit seconds amount: 60! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:47:52'!
+twentyFourHours
+	^Unit hour amount: 24! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:47:59'!
+twoSeconds
+	^Unit second amount: 2! !
+
+!MeasureFactory class methodsFor: 'time' stamp: 'FG 6/8/2017 18:48:06'!
+zeroSeconds
+	^Unit second amount: 0! !
+
+
+!MeasureFactory class methodsFor: 'compound' stamp: 'FG 6/8/2017 18:51:29'!
+oneHundredTwentyOneMetersPerSecond
+
+	^(Unit meter amount: 121) / Unit second! !
+
+!MeasureFactory class methodsFor: 'compound' stamp: 'FG 6/8/2017 18:51:48'!
+oneMeterPerSecond
+
+	^(Unit meter amount: 1) / Unit second! !
+
+!MeasureFactory class methodsFor: 'compound' stamp: 'FG 6/8/2017 18:52:29'!
+twoMetersBySecond
+
+	^(Unit meter amount: 2) / Unit second! !
+
+
+!classDefinition: #Unit category: #'Measure-Solution'!
+Object subclass: #Unit
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Measure-Solution'!
+
+!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 18:24:00'!
+compatibleWith: aUnit
+	self subclassResponsibility ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Unit class' category: #'Measure-Solution'!
+Unit class
+	instanceVariableNames: ''!
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:36:11'!
+centavo
+	^SimpleUnit new initializeWithName: 'centavo' base: (self peso) factorToBase: 1/100! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:13:33'!
+centimeter
+	^SimpleUnit new initializeWithName: 'centimeter' base: (self meter) factorToBase: 1/100! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 18:44:34'!
+day
+	^SimpleUnit new initializeWithName: 'day' base: (self second) factorToBase: 1/(24*3600)! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:13:26'!
+decameter
+	^SimpleUnit new initializeWithName: 'decameter' base: (self meter) factorToBase: 10! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:13:38'!
+decimeter
+	^SimpleUnit new initializeWithName: 'decimeter' base: (self meter) factorToBase: 1/10! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:13:40'!
+hectometer
+	^SimpleUnit new initializeWithName: 'hectometer' base: (self meter) factorToBase: 100! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 18:44:10'!
+hour
+	^SimpleUnit new initializeWithName: 'hour' base: (self second) factorToBase: 1/3600! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:13:46'!
+kilometer
+	^SimpleUnit new initializeWithName: 'kilometer' base: (self meter) factorToBase: 1000! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:17:09'!
+liter
+	^SimpleUnit baseNamed: 'liter'! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:16:56'!
+meter
+	^SimpleUnit baseNamed: 'meter'! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:14:07'!
+millimeter
+	^SimpleUnit new initializeWithName: 'millimeter' base: (self meter) factorToBase: 1/1000! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 18:44:20'!
+minute
+	^SimpleUnit new initializeWithName: 'minute' base: (self second) factorToBase: 1/60! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:16:40'!
+peso
+	^SimpleUnit baseNamed: 'peso'! !
+
+!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 18:35:20'!
+second
+	^SimpleUnit baseNamed: 'second'! !
+
+
+!classDefinition: #ProductUnit category: #'Measure-Solution'!
+Unit subclass: #ProductUnit
 	instanceVariableNames: 'numerator denominator'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Distance-Solution'!
+	category: 'Measure-Solution'!
 
-!CompoundUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:38:46'!
+!ProductUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 17:26:24'!
 base
-	self shouldBeImplemented! !
+	^self! !
 
-!CompoundUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:43:09'!
+!ProductUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 18:15:06'!
 compatibleWith: aCompoundUnit 
-	^self class = aCompoundUnit class and: [ numerator = aCompoundUnit numerator & denominator = aCompoundUnit denominator ].! !
+	^self class = aCompoundUnit class and: [ (numerator compatibleWith: aCompoundUnit numerator) & denominator compatibleWith: aCompoundUnit denominator ].! !
 
-!CompoundUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:43:55'!
+!ProductUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:43:55'!
 denominator
 	^denominator.! !
 
-!CompoundUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:31:37'!
+!ProductUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 18:20:43'!
+factorTo: aCompoundUnit 
+	| denominatorFactor numeratorFactor |
+	numeratorFactor := self numerator factorTo: aCompoundUnit numerator.
+	denominatorFactor := self denominator factorTo: aCompoundUnit denominator.
+	^ numeratorFactor * denominatorFactor.! !
+
+!ProductUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:31:37'!
 initializeWith: anUnit dividedBy: anUnit2 
 	numerator := anUnit.
 	denominator := anUnit2.! !
 
-!CompoundUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:43:29'!
+!ProductUnit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:43:29'!
 numerator
 	^ numerator .! !
 
+!ProductUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 18:05:29'!
+printOn: aStream
+	numerator printOn: aStream.
+	aStream nextPutAll: '/'.
+	denominator printOn: aStream.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CompoundUnit class' category: #'Distance-Solution'!
-CompoundUnit class
+!classDefinition: 'ProductUnit class' category: #'Measure-Solution'!
+ProductUnit class
 	instanceVariableNames: ''!
 
-!CompoundUnit class methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:27:31'!
+!ProductUnit class methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:27:31'!
 with: anUnit dividedBy: anUnit2 
 	^self new initializeWith: anUnit dividedBy: anUnit2 .! !
 
 
-!classDefinition: #DistanceFactory category: #'Distance-Solution'!
-Object subclass: #DistanceFactory
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Distance-Solution'!
-
-!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:26:28'!
-minusOneMeter
-
-	^Distance amount: -1 unit: (Unit meter)! !
-
-!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:26:31'!
-oneCentimeter
-
-	^Distance amount: 1 unit: (Unit centimeter)! !
-
-!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:26:30'!
-oneHundredCentimeters
-
-	^Distance amount: 100 unit: (Unit centimeter)! !
-
-!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:26:35'!
-oneMeter
-
-	^Distance amount: 1 unit: (Unit meter)! !
-
-!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:26:27'!
-twoHundredCentimeters
-
-	^Distance amount: 200 unit: (Unit centimeter)! !
-
-!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:26:34'!
-twoMeters
-
-	^Distance amount: 2 unit: (Unit meter)! !
-
-!DistanceFactory methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:26:25'!
-zeroMeters
-
-	^Distance amount: 0 unit: (Unit meter)! !
-
-
-!classDefinition: #Unit category: #'Distance-Solution'!
-Object subclass: #Unit
+!classDefinition: #SimpleUnit category: #'Measure-Solution'!
+Unit subclass: #SimpleUnit
 	instanceVariableNames: 'name factorToBase base'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Distance-Solution'!
+	category: 'Measure-Solution'!
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:52:27'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:52:27'!
 * aNumber
 	^self amount: aNumber! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 16:26:01'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 18:22:46'!
 / anUnit 
-	^ CompoundUnit with: self dividedBy: anUnit! !
+	^ ProductUnit with: self dividedBy: anUnit! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 20:01:14'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 20:01:14'!
 <= aUnit
 	^name <= aUnit name.! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:43:33'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:43:33'!
 = aUnit
 	^name = aUnit name & factorToBase = aUnit factorToBase.! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:51:09'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:51:09'!
 adaptToNumber: aNumber andSend: aSymbol 
 	
 	"Operation must be commutative"
 	^self perform: aSymbol with: aNumber! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:25:01'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:25:01'!
 amount: anAmount
-	^Distance amount: anAmount unit: self! !
+	^Measure amount: anAmount unit: self! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:11:46'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:11:46'!
 base
 	^base! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:42:33'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 17:16:27'!
+compatibleWith: anUnit 
+	^self class = anUnit class and: [self base = anUnit base].! !
+
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:42:33'!
 factorTo: aUnit
 	(self base = aUnit base) ifFalse: [self error: 'cannot convert'].
 	^self factorToBase / aUnit factorToBase.! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 19:49:34'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 19:49:34'!
 factorToBase
 	^factorToBase! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 19:42:06'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 19:42:06'!
 hash
 	^{ name . factorToBase } hash! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:18:03'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:18:03'!
 initializeWithName: aString 
 	name := aString.
 	base := self.
 	factorToBase := 1.! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:12:20'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:12:20'!
 initializeWithName: aName base: aUnit factorToBase: aFactor
 	name := aName.
 	base := aUnit.
 	factorToBase := aFactor.! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:45:35'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:45:35'!
 name
 	^name! !
 
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:33:55'!
+!SimpleUnit methodsFor: 'as yet unclassified' stamp: 'FG 6/8/2017 17:58:31'!
 printOn: aStream
-	name printOn: aStream.! !
-
-!Unit methodsFor: 'as yet unclassified' stamp: 'FG 6/1/2017 20:20:11'!
-printString
-	^name! !
+	aStream nextPutAll: name! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Unit class' category: #'Distance-Solution'!
-Unit class
+!classDefinition: 'SimpleUnit class' category: #'Measure-Solution'!
+SimpleUnit class
 	instanceVariableNames: ''!
 
-!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:19:22'!
+!SimpleUnit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:19:22'!
 baseNamed: aString 
 	^self new initializeWithName: aString! !
-
-!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/6/2017 20:36:11'!
-centavo
-	^self new initializeWithName: 'centavo' base: (self peso) factorToBase: 1/100! !
-
-!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:13:33'!
-centimeter
-	^self new initializeWithName: 'centimeter' base: (self meter) factorToBase: 1/100! !
-
-!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:13:26'!
-decameter
-	^self new initializeWithName: 'decameter' base: (self meter) factorToBase: 10! !
-
-!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:13:38'!
-decimeter
-	^self new initializeWithName: 'decimeter' base: (self meter) factorToBase: 1/10! !
-
-!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:13:40'!
-hectometer
-	^self new initializeWithName: 'hectometer' base: (self meter) factorToBase: 100! !
-
-!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:13:46'!
-kilometer
-	^self new initializeWithName: 'kilometer' base: (self meter) factorToBase: 1000! !
-
-!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:17:09'!
-liter
-	^self baseNamed: 'liter'! !
-
-!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:16:56'!
-meter
-	^self baseNamed: 'meter'! !
-
-!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:14:07'!
-millimeter
-	^self new initializeWithName: 'millimeter' base: (self meter) factorToBase: 1/1000! !
-
-!Unit class methodsFor: 'as yet unclassified' stamp: 'FG 6/5/2017 19:16:40'!
-peso
-	^self baseNamed: 'peso'! !
-
-!Unit class methodsFor: 'as yet unclassified' stamp: 'T 6/8/2017 15:59:04'!
-seconds
-	^self baseNamed: 'seconds'! !
