@@ -1,6 +1,6 @@
 !classDefinition: #CartCashierTest category: #'TusLibros-Solution'!
 TestCase subclass: #CartCashierTest
-	instanceVariableNames: 'cart cashier emptyCart cartWithItems'
+	instanceVariableNames: 'cart cashier emptyCart cartWithItems aCashier aCreditCard'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Solution'!
@@ -94,6 +94,13 @@ test13CashierReturnsATicketWithTheTotalWhenCheckingOut
 	ticket := cashier checkOut: cartWithItems.
 	self assert: 75 equals: ticket .! !
 
+!CartCashierTest methodsFor: 'as yet unclassified' stamp: 'FG 6/22/2017 21:27:06'!
+test14CashierShouldFailToCheckoutWithExpiredCreditCard
+	| chargedPrice totalPrice |
+	chargedPrice := aCashier checkout: cart andPayWith: aCreditCard.
+	totalPrice := cart contents collect: [ :anItem | aCashier priceOf: anItem] andFold: [ :a :b | a + b].
+	self assert: totalPrice equals: chargedPrice! !
+
 
 !classDefinition: #Cart category: #'TusLibros-Solution'!
 Object subclass: #Cart
@@ -172,6 +179,13 @@ checkOut: aCart
 	listOfSales add: total.
 	^total! !
 
+!Cashier methodsFor: 'as yet unclassified' stamp: 'FG 6/15/2017 20:37:53'!
+checkout: aCart andPayWith: aCreditCard
+	self error: self class emptyCartErrorMessage.! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'FG 6/15/2017 20:29:19'!
+debit: anAmount from: aCreditCard! !
+
 !Cashier methodsFor: 'as yet unclassified' stamp: 'T 6/22/2017 13:43:53'!
 initialize
 	listOfSales := Set new.! !
@@ -193,6 +207,10 @@ Cashier class
 !Cashier class methodsFor: 'as yet unclassified' stamp: 'T 6/22/2017 13:01:13'!
 emptyCartCheckOutErrorMessageText
 	^'Cant check out an empty cart'! !
+
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'FG 6/15/2017 19:52:35'!
+emptyCartErrorMessage
+	^'cannot check out empty cart'! !
 
 !Cashier class methodsFor: 'as yet unclassified' stamp: 'T 6/22/2017 16:25:46'!
 withListOfPrices: aListOfPrices
